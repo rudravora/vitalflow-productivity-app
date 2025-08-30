@@ -95,7 +95,8 @@ export function useProductivity() {
     });
 
     // Grow garden
-    const newPlants = [...(userProgress.gardenPlants || [])];
+    const currentPlants = Array.isArray(userProgress.gardenPlants) ? userProgress.gardenPlants : ["🌱"];
+    const newPlants = [...currentPlants];
     const plantOptions = ['🌱', '🌿', '🌸', '🌺', '🌻', '🌷', '🌹', '🌳'];
     const nextPlant = plantOptions[Math.min(newPlants.length, plantOptions.length - 1)];
     if (newPlants.length < 10) {

@@ -34,6 +34,32 @@ export class MemStorage implements IStorage {
   }
 
   private seedData() {
+    // Create demo user
+    const demoUserId = "demo-user";
+    const demoUser: User = {
+      id: demoUserId,
+      username: "demo",
+      password: "demo"
+    };
+    this.users.set(demoUserId, demoUser);
+    
+    // Create demo user progress
+    const demoProgressId = randomUUID();
+    const demoProgress: UserProgress = {
+      id: demoProgressId,
+      userId: demoUserId,
+      currentMood: "focused",
+      energyLevel: 75,
+      tipsLearned: 0,
+      streakDays: 1,
+      habitsBuilt: 0,
+      productivityScore: 750,
+      gardenPlants: ["🌱"],
+      achievements: ["🌱"],
+      lastActive: new Date()
+    };
+    this.userProgress.set(demoProgressId, demoProgress);
+
     // Seed productivity tips
     const tips = [
       { mood: "stressed", category: "Stress Management", text: "Take 3 deep breaths before starting any task. This simple technique reduces cortisol levels and improves focus.", difficulty: "Beginner", timesSaved: "5 mins/day" },
@@ -115,8 +141,16 @@ export class MemStorage implements IStorage {
   async createUserProgress(progress: InsertUserProgress): Promise<UserProgress> {
     const id = randomUUID();
     const userProgress: UserProgress = {
-      ...progress,
       id,
+      userId: progress.userId,
+      currentMood: progress.currentMood || "focused",
+      energyLevel: progress.energyLevel || 75,
+      tipsLearned: progress.tipsLearned || 0,
+      streakDays: progress.streakDays || 1,
+      habitsBuilt: progress.habitsBuilt || 0,
+      productivityScore: progress.productivityScore || 750,
+      gardenPlants: progress.gardenPlants || ["🌱"],
+      achievements: progress.achievements || ["🌱"],
       lastActive: new Date()
     };
     this.userProgress.set(id, userProgress);
@@ -132,8 +166,12 @@ export class MemStorage implements IStorage {
   async createHabit(habit: InsertHabit): Promise<Habit> {
     const id = randomUUID();
     const newHabit: Habit = {
-      ...habit,
       id,
+      userId: habit.userId,
+      name: habit.name,
+      progress: habit.progress || 0,
+      target: habit.target || 7,
+      isActive: habit.isActive !== undefined ? habit.isActive : true,
       createdAt: new Date()
     };
     this.habits.set(id, newHabit);
@@ -163,7 +201,14 @@ export class MemStorage implements IStorage {
 
   async createProductivityTip(tip: InsertProductivityTip): Promise<ProductivityTip> {
     const id = randomUUID();
-    const newTip: ProductivityTip = { ...tip, id };
+    const newTip: ProductivityTip = { 
+      id,
+      mood: tip.mood,
+      category: tip.category,
+      text: tip.text,
+      difficulty: tip.difficulty,
+      timesSaved: tip.timesSaved || null
+    };
     this.productivityTips.set(id, newTip);
     return newTip;
   }
