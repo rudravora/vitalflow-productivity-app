@@ -4,7 +4,7 @@ export default function Header() {
   return (
     <header className="text-center text-white mb-8 relative">
       <h1 className="text-4xl sm:text-5xl font-extrabold mb-3 animate-glow" data-testid="text-app-title">
-        🌱 ProductiviGrow
+        ⚡ VitalFlow
       </h1>
       <p className="text-lg sm:text-xl opacity-90 mb-6 font-medium" data-testid="text-app-tagline">
         Your Personal Productivity Ecosystem

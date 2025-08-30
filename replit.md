@@ -1,8 +1,8 @@
-# ProductiviGrow
+# VitalFlow
 
 ## Overview
 
-ProductiviGrow is a personal productivity ecosystem application that provides users with personalized tips, habit tracking, and gamified progress monitoring. The application adapts to users' current mood and energy levels to deliver contextually relevant productivity advice. Built as a full-stack web application with a React frontend and Express backend, it features a gamified experience with achievements, progress gardens, and comprehensive analytics.
+VitalFlow is a personal productivity ecosystem application that provides users with personalized tips, habit tracking, and gamified progress monitoring. The application adapts to users' current mood and energy levels to deliver contextually relevant productivity advice. Built as a full-stack web application with a React frontend and Express backend, it features a gamified experience with achievements, progress gardens, and comprehensive analytics.
 
 ## User Preferences
 
