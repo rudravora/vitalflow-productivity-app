@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProductiviGrow - Your Personal Productivity Ecosystem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --energy-low: #ff6b6b;
+            --energy-medium: #feca57;
+            --energy-high: #48dbfb;
+            --energy-peak: #0be881;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Section */
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 2.8em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 2px 2px 10px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.2); }
+            to { text-shadow: 2px 2px 10px rgba(0,0,0,0.3), 0 0 30px rgba(255,255,255,0.4); }
+        }
+
+        .tagline {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        /* Dashboard Grid */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .dashboard-card:hover::before {
+            left: 100%;
+        }
+
+        .card-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            animation: bounce 2s infinite;
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .card-subtitle {
+            color: #4a5568;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Mood Selector */
+        .mood-selector {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .mood-title {
+            font-size: 1.5em;
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .mood-options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .mood-btn {
+            background: white;
+            border: 3px solid #e2e8f0;
+            padding: 15px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #4a5568;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mood-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .mood-btn.active {
+            background: var(--success-gradient);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 15px 30px rgba(79, 172, 254, 0.3);
+        }
+
+        /* Energy Meter */
+        .energy-section {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .energy-meter {
+            width: 100%;
+            height: 20px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            margin: 15px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .energy-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: all 0.5s ease;
+            position: relative;
+            background: var(--energy-medium);
+        }
+
+        .energy-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        /* Tip Display */
+        .tip-display {
+            text-align: center;
+            margin: 30px 0;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .tip-card {
+            background: linear-gradient(135deg, #667eea20, #764ba220);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid #667eea40;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tip-category {
+            display: inline-block;
+            background: var(--secondary-gradient);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .tip-text {
+            font-size: 1.3em;
+            color: #2d3748;
+            line-height: 1.6;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .tip-difficulty {
+            display: inline-block;
+            background: #48dbfb;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        /* Progress Garden */
+        .garden-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .garden-title {
+            font-size: 1.4em;
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .garden-display {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
+        .plant {
+            font-size: 2em;
+            animation: grow 0.8s ease-out;
+            transition: transform 0.3s ease;
+        }
+
+        .plant:hover {
+            transform: scale(1.2);
+        }
+
+        @keyframes grow {
+            0% { transform: scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(5deg); opacity: 0.7; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .action-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .action-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .roulette-btn {
+            background: var(--secondary-gradient);
+        }
+
+        .roulette-btn:hover {
+            box-shadow: 0 15px 35px rgba(240, 147, 251, 0.4);
+        }
+
+        /* Stats Dashboard */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #667eea;
+            display: block;
+        }
+
+        .stat-label {
+            color: #4a5568;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        /* Achievements */
+        .achievements {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .achievement-title {
+            font-size: 1.4em;
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .achievement-list {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .achievement {
+            background: white;
+            padding: 15px;
+            border-radius: 50px;
+            font-size: 1.5em;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .achievement:hover {
+            transform: scale(1.1);
+        }
+
+        .achievement.unlocked {
+            animation: unlock 0.6s ease-out;
+        }
+
+        @keyframes unlock {
+            0% { transform: scale(0) rotate(0deg); }
+            50% { transform: scale(1.3) rotate(180deg); }
+            100% { transform: scale(1) rotate(360deg); }
+        }
+
+        /* Micro-Habit Tracker */
+        .habit-tracker {
+            background: rgba(72, 219, 251, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .habit-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin: 10px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .habit-item:hover {
+            transform: translateX(5px);
+        }
+
+        .habit-progress {
+            width: 100px;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .habit-progress-fill {
+            height: 100%;
+            background: var(--success-gradient);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .mood-options {
+                gap: 10px;
+            }
+            
+            .mood-btn {
+                padding: 12px 20px;
+                font-size: 1em;
+            }
+            
+            .action-buttons {
+                gap: 10px;
+            }
+            
+            .action-btn {
+                padding: 12px 25px;
+                font-size: 1em;
+            }
+        }
+
+        /* Particle Effects */
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #667eea;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float 3s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 1; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 0.5; }
+        }
+
+        /* Notification System */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success-gradient);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transform: translateX(100%);
+            animation: slideIn 0.5s ease forwards;
+            font-weight: 600;
+        }
+
+        @keyframes slideIn {
+            to { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <div class="logo">🌱 ProductiviGrow</div>
+            <div class="tagline">Your Personal Productivity Ecosystem</div>
+        </div>
+
+        <div class="dashboard">
+            <div class="dashboard-card" onclick="showSection('garden')">
+                <div class="card-icon">🌸</div>
+                <div class="card-title">Progress Garden</div>
+                <div class="card-subtitle">Watch your productivity bloom with every tip mastered</div>
+            </div>
+            <div class="dashboard-card" onclick="showSection('personality')">
+                <div class="card-icon">🧠</div>
+                <div class="card-title">Personality Quiz</div>
+                <div class="card-subtitle">Discover your unique productivity style</div>
+            </div>
+            <div class="dashboard-card" onclick="showSection('challenges')">
+                <div class="card-icon">⚡</div>
+                <div class="card-title">Daily Challenges</div>
+                <div class="card-subtitle">Level up with micro-productivity tasks</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="mood-selector">
+                <div class="mood-title">How are you feeling today?</div>
+                <div class="mood-options">
+                    <button class="mood-btn" onclick="selectMood('stressed')">😰 Stressed</button>
+                    <button class="mood-btn" onclick="selectMood('motivated')">🚀 Motivated</button>
+                    <button class="mood-btn active" onclick="selectMood('focused')">🎯 Focused</button>
+                    <button class="mood-btn" onclick="selectMood('creative')">🎨 Creative</button>
+                    <button class="mood-btn" onclick="selectMood('overwhelmed')">🌊 Overwhelmed</button>
+                </div>
+            </div>
+
+            <div class="energy-section">
+                <h3>Energy Level: <span id="energyLevel">75%</span></h3>
+                <div class="energy-meter">
+                    <div class="energy-fill" id="energyFill" style="width: 75%"></div>
+                </div>
+                <button onclick="adjustEnergy(-10)">😴 Lower</button>
+                <button onclick="adjustEnergy(10)">⚡ Higher</button>
+            </div>
+
+            <div class="tip-display">
+                <div class="tip-card">
+                    <div class="tip-category" id="tipCategory">Focus Enhancement</div>
+                    <div class="tip-text" id="tipText">
+                        Welcome to your productivity journey! Select your mood and energy level to get personalized tips that adapt to your current state.
+                    </div>
+                    <div class="tip-difficulty" id="tipDifficulty">Beginner</div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn" onclick="getPersonalizedTip()">
+                    🎯 Get Smart Tip
+                </button>
+                <button class="action-btn roulette-btn" onclick="spinRoulette()">
+                    🎰 Roulette Spin
+                </button>
+                <button class="action-btn" onclick="buildHabit()">
+                    🔧 Build Micro-Habit
+                </button>
+            </div>
+
+            <div class="garden-section">
+                <div class="garden-title">🌺 Your Productivity Garden</div>
+                <div class="garden-display" id="gardenDisplay">
+                    <div class="plant">🌱</div>
+                </div>
+                <p><span id="plantsCount">1</span> tips mastered • Garden Level <span id="gardenLevel">1</span></p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number" id="tipsLearned">0</span>
+                    <div class="stat-label">Tips Learned</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="streakDays">1</span>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="habitsBuilt">0</span>
+                    <div class="stat-label">Habits Built</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="productivityScore">750</span>
+                    <div class="stat-label">Productivity Score</div>
+                </div>
+            </div>
+
+            <div class="achievements">
+                <div class="achievement-title">🏆 Achievements Unlocked</div>
+                <div class="achievement-list" id="achievementsList">
+                    <div class="achievement" title="First Steps">🌱</div>
+                    <div class="achievement" title="Coming Soon" style="opacity: 0.3">🌸</div>
+                    <div class="achievement" title="Coming Soon" style="opacity: 0.3">🌺</div>
+                    <div class="achievement" title="Coming Soon" style="opacity: 0.3">🌳</div>
+                </div>
+            </div>
+
+            <div class="habit-tracker">
+                <h3>🎯 Active Micro-Habits</h3>
+                <div id="habitList">
+                    <div class="habit-item">
+                        <span>2-minute desk cleanup</span>
+                        <div class="habit-progress">
+                            <div class="habit-progress-fill" style="width: 60%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Comprehensive productivity tips database organized by mood and difficulty
+        const productivityTips = {
+            stressed: [
+                { text: "Take 3 deep breaths before starting any task. This simple technique reduces cortisol levels and improves focus.", category: "Stress Management", difficulty: "Beginner", timesSaved: "5 mins/day" },
+                { text: "Use the 'Brain Dump' technique: Write down everything on your mind for 5 minutes to clear mental clutter.", category: "Mental Clarity", difficulty: "Beginner", timesSaved: "15 mins/day" },
+                { text: "Practice the 5-4-3-2-1 grounding technique: Notice 5 things you see, 4 you hear, 3 you touch, 2 you smell, 1 you taste.", category: "Mindfulness", difficulty: "Intermediate", timesSaved: "10 mins/day" }
+            ],
+            motivated: [
+                { text: "Channel your motivation with the 'Power Hour': Tackle your most challenging task when energy is highest.", category: "Energy Management", difficulty: "Intermediate", timesSaved: "30 mins/day" },
+                { text: "Create a 'Victory Ritual': Celebrate small wins immediately to maintain motivation momentum.", category: "Psychology", difficulty: "Beginner", timesSaved: "Build momentum" },
+                { text: "Use the 'Motivation Multiplier': Pair exciting tasks with boring ones to maintain high energy.", category: "Task Management", difficulty: "Advanced", timesSaved: "45 mins/day" }
+            ],
+            focused: [
+                { text: "Implement the 'Focus Fortress': Remove all distractions from your workspace for 90 minutes of deep work.", category: "Deep Work", difficulty: "Intermediate", timesSaved: "60 mins/day" },
+                { text: "Use the 'Single-Tab Rule': Keep only one browser tab open while working on focused tasks.", category: "Digital Focus", difficulty: "Beginner", timesSaved: "20 mins/day" },
+                { text: "Practice 'Attention Anchoring': Choose one specific object to return your focus to when mind wanders.", category: "Concentration", difficulty: "Advanced", timesSaved: "40 mins/day" }
+            ],
+            creative: [
+                { text: "Try the 'Random Word' technique: Pick a random word and connect it to your creative challenge.", category: "Creativity", difficulty: "Beginner", timesSaved: "Break creative blocks" },
+                { text: "Use 'Walking Meditation': Take a 10-minute walk without devices to stimulate creative thinking.", category: "Inspiration", difficulty: "Beginner", timesSaved: "Generate new ideas" },
+                { text: "Practice 'Constraint Creativity': Set artificial limitations to spark innovative solutions.", category: "Innovation", difficulty: "Advanced", timesSaved: "Faster ideation" }
+            ],
+            overwhelmed: [
+                { text: "Use the 'One Thing' rule: Focus on completing just one small task to regain control.", category: "Simplification", difficulty: "Beginner", timesSaved: "Reduce anxiety" },
+                { text: "Practice 'Triage Thinking': Categorize tasks as Critical, Important, or Nice-to-Have.", category: "Prioritization", difficulty: "Intermediate", timesSaved: "30 mins/day" },
+                { text: "Implement 'Time Boxing': Allocate fixed time periods for each task to prevent over-commitment.", category: "Time Management", difficulty: "Advanced", timesSaved: "60 mins/day" }
+            ]
+        };
+
+        // App state
+        let currentMood = 'focused';
+        let currentEnergy = 75;
+        let tipsLearned = 0;
+        let habitsBuilt = 0;
+        let plants = ['🌱'];
+        let achievements = ['🌱'];
+        let streakDays = 1;
+        let productivityScore = 750;
+
+        // Plant progression system
+        const plantGrowth = ['🌱', '🌿', '🌸', '🌺', '🌻', '🌷', '🌹', '🌳', '🦋', '🌈'];
+
+        function selectMood(mood) {
+            currentMood = mood;
+            document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Change app colors based on mood
+            const root = document.documentElement;
+            switch(mood) {
+                case 'stressed':
+                    root.style.setProperty('--primary-gradient', 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)');
+                    break;
+                case 'motivated':
+                    root.style.setProperty('--primary-gradient', 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)');
+                    break;
+                case 'focused':
+                    root.style.setProperty('--primary-gradient', 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)');
+                    break;
+                case 'creative':
+                    root.style.setProperty('--primary-gradient', 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)');
+                    break;
+                case 'overwhelmed':
+                    root.style.setProperty('--primary-gradient', 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)');
+                    break;
+            }
+            
+            showNotification(`Mood updated to ${mood}! Your tips will adapt accordingly. 🎯`);
+        }
+
+        function adjustEnergy(change) {
+            currentEnergy = Math.max(0, Math.min(100, currentEnergy + change));
+            document.getElementById('energyLevel').textContent = currentEnergy + '%';
+            document.getElementById('energyFill').style.width = currentEnergy + '%';
+            
+            // Change energy bar color based on level
+            const energyFill = document.getElementById('energyFill');
+            if (currentEnergy < 25) {
+                energyFill.style.background = 'var(--energy-low)';
+            } else if (currentEnergy < 50) {
+                energyFill.style.background = 'var(--energy-medium)';
+            } else if (currentEnergy < 75) {
+                energyFill.style.background = 'var(--energy-high)';
+            } else {
+                energyFill.style.background = 'var(--energy-peak)';
+            }
+        }
+
+        function getPersonalizedTip() {
+            const moodTips = productivityTips[currentMood];
+            const tip = moodTips[Math.floor(Math.random() * moodTips.length)];
+            
+            displayTip(tip);
+            growGarden();
+            updateStats();
+            createParticleEffect();
+        }
+
+        function spinRoulette() {
+            const allTips = Object.values(productivityTips).flat();
+            const randomTip = allTips[Math.floor(Math.random() * allTips.length)];
+            
+            // Add spinning animation
+            const tipCard = document.querySelector('.tip-card');
+            tipCard.style.transform = 'rotateY(360deg)';
+            tipCard.style.transition = 'transform 0.8s ease';
+            
+            setTimeout(() => {
+                displayTip(randomTip);
+                tipCard.style.transform = 'rotateY(0deg)';
+                growGarden();
+                updateStats();
+                showNotification('🎰 Roulette spin complete! New tip discovered!');
+            }, 800);
+        }
+
+        function displayTip(tip) {
+            document.getElementById('tipCategory').textContent = tip.category;
+            document.getElementById('tipText').textContent = tip.text;
+            document.getElementById('tipDifficulty').textContent = tip.difficulty;
+            
+            // Add tip appearance animation
+            const tipText = document.getElementById('tipText');
+            tipText.style.opacity = '0';
+            tipText.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                tipText.style.transition = 'all 0.6s ease';
+                tipText.style.opacity = '1';
+                tipText.style.transform = 'translateY(0)';
+            }, 100);
+        }
+
+        function buildHabit() {
+            const currentTip = document.getElementById('tipText').textContent;
+            if (currentTip.length < 50) return;
+            
+            const microHabit = convertToMicroHabit(currentTip);
+            addHabitToTracker(microHabit);
+            habitsBuilt++;
+            updateStats();
+            showNotification('🔧 Micro-habit created! Check your habit tracker below.');
+        }
+
+        function convertToMicroHabit(tip) {
+            const microHabits = [
+                "Take 3 deep breaths before work",
+                "Write one priority on sticky note",
+                "Clear desk for 30 seconds",
+                "Set one-task focus timer",
+                "Close unnecessary browser tabs"
+            ];
+            return microHabits[Math.floor(Math.random() * microHabits.length)];
+        }
+
+        function addHabitToTracker(habit) {
