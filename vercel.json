@@ -2,10 +2,12 @@
   "version": 2,
   "builds": [
     {
-      "src": "server/**/*.ts",
+      "src": "server/index.ts",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["server/**/*", "shared/**/*"]
+        "includeFiles": ["server/**/*", "shared/**/*"],
+        "buildCommand": "npm install",
+        "nodeVersion": "latest"
       }
     },
     {
@@ -21,7 +23,14 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "server/index.ts"
+      "dest": "server/index.ts",
+      "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      "headers": {
+        "Access-Control-Allow-Origin": "https://vitalflow-productivity-app.vercel.app",
+        "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Credentials": "true"
+      }
     },
     {
       "handle": "filesystem"

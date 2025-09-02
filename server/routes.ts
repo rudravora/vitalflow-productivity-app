@@ -27,11 +27,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { userId } = req.params;
       console.log('Progress update request:', { userId, body: req.body });
       
-      const updateData = insertUserProgressSchema.partial().parse(req.body);
-      const progress = await storage.updateUserProgress(userId, updateData);
+      // Get existing progress or create new one
+      let progress = await storage.getUserProgress(userId);
+      if (!progress) {
+        progress = {
+          id: userId,
+          userId,
+          currentMood: "neutral",
+          energyLevel: 5,
+          productivityScore: 0,
+          tipsLearned: 0,
+          streakDays: 0,
+          habitsBuilt: 0,
+          gardenPlants: ["🌱"],
+          achievements: [],
+          lastActive: new Date()
+        };
+      }
       
-      console.log('Updated progress:', progress);
-      res.json(progress);
+      // Update with new data
+      const updatedProgress = {
+        ...progress,
+        ...req.body,
+        lastActive: new Date()
+      };
+      
+      // Save the progress
+      await storage.userProgress.set(userId, updatedProgress);
+      console.log('Updated progress:', updatedProgress);
+      res.json(updatedProgress);
     } catch (error) {
       console.error('Error updating progress:', error);
       res.status(500).json({ 

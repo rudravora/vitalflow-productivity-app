@@ -20,19 +20,14 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-  private userProgress: Map<string, UserProgress>;
-  private habits: Map<string, Habit>;
-  private productivityTips: Map<string, ProductivityTip>;
+  private users = new Map<string, User>();
+  private userProgress = new Map<string, UserProgress>();
+  private habits = new Map<string, Habit>();
+  private productivityTips = new Map<string, ProductivityTip>();
 
   constructor() {
-    this.users = new Map();
-    this.userProgress = new Map();
-    this.habits = new Map();
-    this.productivityTips = new Map();
-
     // Initialize demo user data
-    this.userProgress.set("demo-user", {
+    const demoProgress: UserProgress = {
       id: "demo-user",
       userId: "demo-user",
       currentMood: "neutral",
@@ -44,9 +39,9 @@ export class MemStorage implements IStorage {
       gardenPlants: ["🌱"],
       achievements: [],
       lastActive: new Date()
-    });
-    this.habits = new Map();
-    this.productivityTips = new Map();
+    };
+    
+    this.userProgress.set("demo-user", demoProgress);
     this.seedData();
   }
 
@@ -139,14 +134,13 @@ export class MemStorage implements IStorage {
     );
   }
 
-  async updateUserProgress(userId: string, progressUpdate: Partial<InsertUserProgress>): Promise<UserProgress> {
-    let existing = await this.getUserProgress(userId);
+    async updateUserProgress(userId: string, progress: Partial<InsertUserProgress>): Promise<UserProgress> {
+    const existingProgress = await this.getUserProgress(userId);
     
-    // For demo user, always ensure we have initial data
-    if (!existing && userId === "demo-user") {
-      existing = {
-        id: "demo-user",
-        userId: "demo-user",
+    if (!existingProgress) {
+      return this.createUserProgress({
+        id: userId,
+        userId,
         currentMood: "neutral",
         energyLevel: 5,
         productivityScore: 0,
@@ -156,21 +150,14 @@ export class MemStorage implements IStorage {
         gardenPlants: ["🌱"],
         achievements: [],
         lastActive: new Date()
-      };
-      this.userProgress.set(userId, existing);
-    } else if (!existing) {
-      throw new Error("User progress not found");
+      });
     }
-    
-    const updated: UserProgress = {
-      ...existing,
-      ...progressUpdate,
+
+    const updatedProgress = {
+      ...existingProgress,
+      ...progress,
       lastActive: new Date()
     };
-    
-    this.userProgress.set(existing.id, updated);
-    return updated;
-  }
 
   async createUserProgress(progress: InsertUserProgress): Promise<UserProgress> {
     const id = randomUUID();
