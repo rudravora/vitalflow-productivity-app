@@ -7,7 +7,7 @@
       "config": {
         "includeFiles": ["server/**/*", "shared/**/*"],
         "buildCommand": "npm install",
-        "nodeVersion": "latest"
+        "nodeVersion": "22.x"
       }
     },
     {
