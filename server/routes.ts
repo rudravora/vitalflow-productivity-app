@@ -25,12 +25,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/progress/:userId", async (req, res) => {
     try {
       const { userId } = req.params;
-      const updateData = insertUserProgressSchema.partial().parse(req.body);
+      console.log('Progress update request:', { userId, body: req.body });
       
+      const updateData = insertUserProgressSchema.partial().parse(req.body);
       const progress = await storage.updateUserProgress(userId, updateData);
+      
+      console.log('Updated progress:', progress);
       res.json(progress);
     } catch (error) {
-      res.status(500).json({ message: "Failed to update user progress" });
+      console.error('Error updating progress:', error);
+      res.status(500).json({ 
+        message: "Failed to update user progress",
+        details: error instanceof Error ? error.message : String(error)
+      });
     }
   });
 

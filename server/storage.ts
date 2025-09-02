@@ -30,6 +30,23 @@ export class MemStorage implements IStorage {
     this.userProgress = new Map();
     this.habits = new Map();
     this.productivityTips = new Map();
+
+    // Initialize demo user data
+    this.userProgress.set("demo-user", {
+      id: "demo-user",
+      userId: "demo-user",
+      currentMood: "neutral",
+      energyLevel: 5,
+      productivityScore: 0,
+      tipsLearned: 0,
+      streakDays: 0,
+      habitsBuilt: 0,
+      gardenPlants: ["🌱"],
+      achievements: [],
+      lastActive: new Date()
+    });
+    this.habits = new Map();
+    this.productivityTips = new Map();
     this.seedData();
   }
 
@@ -123,8 +140,25 @@ export class MemStorage implements IStorage {
   }
 
   async updateUserProgress(userId: string, progressUpdate: Partial<InsertUserProgress>): Promise<UserProgress> {
-    const existing = await this.getUserProgress(userId);
-    if (!existing) {
+    let existing = await this.getUserProgress(userId);
+    
+    // For demo user, always ensure we have initial data
+    if (!existing && userId === "demo-user") {
+      existing = {
+        id: "demo-user",
+        userId: "demo-user",
+        currentMood: "neutral",
+        energyLevel: 5,
+        productivityScore: 0,
+        tipsLearned: 0,
+        streakDays: 0,
+        habitsBuilt: 0,
+        gardenPlants: ["🌱"],
+        achievements: [],
+        lastActive: new Date()
+      };
+      this.userProgress.set(userId, existing);
+    } else if (!existing) {
       throw new Error("User progress not found");
     }
     
