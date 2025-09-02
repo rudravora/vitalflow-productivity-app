@@ -6,11 +6,12 @@
       "use": "@vercel/node"
     },
     {
-      "src": "client/**",
+      "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "buildCommand": "npm run build",
-        "outputDirectory": "dist"
+        "zeroConfig": true,
+        "buildCommand": "cd client && npm install && vite build",
+        "outputDirectory": "client/dist"
       }
     }
   ],
