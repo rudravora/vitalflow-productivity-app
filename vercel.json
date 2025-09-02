@@ -10,8 +10,8 @@
       "use": "@vercel/static-build",
       "config": {
         "zeroConfig": true,
-        "buildCommand": "cd client && npm install && vite build",
-        "outputDirectory": "client/dist"
+        "buildCommand": "npm install && npm run build",
+        "outputDirectory": "dist"
       }
     }
   ],
